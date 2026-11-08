@@ -1,0 +1,548 @@
+
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#087a48">
+<title>RELAX PLUS V2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+ --green:#087a48;
+ --dark:#064b32;
+ --light:#e9f7ee;
+ --red:#ed4050;
+ --bg:#f5f7f5;
+ --text:#183127;
+ --muted:#75837a;
+ --line:#e4ebe6;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:540px;margin:auto;min-height:100vh;background:white;padding-bottom:85px}
+header{background:var(--green);color:white;padding:17px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:25px;font-weight:900}
+.logo span{color:#caff9d}
+.small{font-size:11px;opacity:.85}
+.branch{background:#ffffff20;color:white;border:0;border-radius:9px;padding:9px;margin-top:12px;width:100%;text-align:left}
+.search{width:100%;border:0;outline:0;border-radius:12px;padding:13px;margin-top:13px}
+main{padding:15px}
+.page{display:none}
+.page.active{display:block}
+.banner{border-radius:19px;padding:20px;color:white;background:linear-gradient(120deg,#f84b4b,#c91f47);display:flex;justify-content:space-between;align-items:center}
+.banner h2{font-size:27px;margin:0}
+.banner p{font-size:13px}
+.banner .art{font-size:65px}
+.section{display:flex;justify-content:space-between;align-items:center;margin:22px 0 12px}
+.section h3{margin:0;font-size:18px}
+.link{border:0;background:none;color:var(--green);font-weight:bold;font-size:12px}
+.chips{display:flex;gap:8px;overflow:auto;padding-bottom:8px}
+.chip{border:1px solid var(--line);background:white;border-radius:20px;padding:10px 14px;white-space:nowrap;font-size:12px}
+.chip.active{background:var(--green);color:white;border-color:var(--green)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.product{border:1px solid var(--line);border-radius:16px;padding:10px;position:relative}
+.photo{height:112px;background:#f1f7f3;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:60px}
+.product h4{font-size:13px;margin:10px 0 5px;min-height:30px}
+.muted{color:var(--muted);font-size:12px}
+.price{font-weight:900;font-size:17px;margin-top:8px}
+.old{text-decoration:line-through;color:#999;font-size:11px}
+.tag{display:inline-block;background:#e7f7eb;color:var(--green);font-size:10px;border-radius:7px;padding:5px;font-weight:bold}
+.sale{position:absolute;top:15px;left:15px;background:var(--red);color:white;border-radius:7px;padding:5px;font-size:11px;font-weight:bold}
+.heart{position:absolute;right:15px;top:15px;border:0;border-radius:50%;background:white;font-size:20px;width:31px;height:31px}
+.add{position:absolute;right:10px;bottom:10px;background:var(--green);color:white;border:0;border-radius:10px;width:36px;height:36px;font-size:23px}
+.card{border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;background:white}
+.btn{background:var(--green);color:white;border:0;border-radius:11px;padding:12px 15px;font-weight:bold}
+.btn.secondary{background:white;color:var(--green);border:1px solid var(--green)}
+.btn:disabled{background:#a5b7ad;color:white}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.coupon{display:flex;align-items:center;gap:12px}
+.coupon .emoji{font-size:37px;background:var(--light);padding:12px;border-radius:12px}
+.coupon .info{flex:1}
+.loyalty{background:linear-gradient(130deg,#098550,#06472f);color:white;border-radius:19px;padding:22px}
+.points{font-size:42px;font-weight:900;margin:10px 0}
+.qr{background:white;padding:14px;border-radius:15px;width:max-content;margin:18px auto;max-width:100%}
+.qr img{max-width:100%}
+.cartitem{display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:12px 0}
+.mini{font-size:33px;background:var(--light);border-radius:12px;padding:12px}
+.cartinfo{flex:1}
+.qty{display:flex;align-items:center;gap:9px}
+.qty button{background:white;border:1px solid var(--line);border-radius:8px;width:29px;height:29px}
+.total{display:flex;justify-content:space-between;margin:12px 0}
+.input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;margin:7px 0 13px}
+.notice{background:#fff7e6;color:#7b5915;border-radius:12px;padding:12px;font-size:12px;line-height:1.6}
+.empty{text-align:center;color:var(--muted);padding:35px 10px}
+.reward{display:flex;align-items:center;gap:12px}
+.reward .emoji{font-size:35px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:540px;width:100%;background:white;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 3px max(8px,env(safe-area-inset-bottom));z-index:20}
+.nav button{border:0;background:none;color:#829087;font-size:10px}
+.nav button.active{color:var(--green);font-weight:bold}
+.nav .ico{display:block;font-size:23px;margin-bottom:4px}
+.badge{background:var(--red);color:white;border-radius:12px;padding:2px 5px;font-size:10px}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#20382d;color:white;border-radius:20px;padding:12px 18px;display:none;z-index:50;font-size:13px;max-width:90%;text-align:center}
+.listitem{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.listitem span{flex:1}
+.listitem.done span{text-decoration:line-through;color:#999}
+.game{background:linear-gradient(135deg,#ffe9a5,#fff8df);border-radius:18px;padding:20px;text-align:center}
+.game .gift{font-size:60px}
+footer{text-align:center;color:#888;font-size:10px;padding:20px}
+@media(max-width:350px){.photo{height:90px;font-size:46px}.banner .art{font-size:42px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="top">
+  <div>
+   <div class="logo">RELAX <span>PLUS</span></div>
+   <div class="small">V2 • DEMO • Барномаи ғайрирасмӣ</div>
+  </div>
+  <div style="font-size:26px">🛒</div>
+ </div>
+ <button class="branch" onclick="chooseBranch()">📍 <span id="branchName">Филиали марказӣ</span> ▾</button>
+ <input class="search" id="search" placeholder="🔎 Ҷустуҷӯи маҳсулот...">
+</header>
+
+<main>
+<section id="home" class="page active">
+ <div class="banner">
+  <div>
+   <h2>ТАХФИФҲО<br>ТО 50%</h2>
+   <p>Пешниҳодҳои махсуси ҳафта</p>
+   <button class="btn secondary" onclick="showPage('offers')">Дидани аксияҳо</button>
+  </div>
+  <div class="art">🛍️</div>
+ </div>
+ <div class="section"><h3>Хизматрасониҳо</h3></div>
+ <div class="grid">
+  <button class="card" onclick="showPage('coupons')">🎟️<br><b>Купонҳо</b></button>
+  <button class="card" onclick="showPage('loyalty')">💚<br><b>Корти бонусӣ</b></button>
+  <button class="card" onclick="showPage('offers')">🔥<br><b>Аксияҳо</b></button>
+  <button class="card" onclick="showPage('shopping')">📝<br><b>Рӯйхати харид</b></button>
+ </div>
+ <div class="section"><h3>Категорияҳо</h3></div>
+ <div class="chips" id="categories"></div>
+ <div class="section">
+  <h3>Маҳсулот</h3>
+  <button class="link" onclick="setCategory('Ҳама')">Ҳамааш</button>
+ </div>
+ <div class="grid" id="products"></div>
+</section>
+
+<section id="offers" class="page">
+ <h2>🔥 Аксияҳои ҳафта</h2>
+ <p class="muted">Нархҳои намунавии тахфифшуда</p>
+ <div class="grid" id="offerProducts"></div>
+</section>
+
+<section id="coupons" class="page">
+ <h2>🎟 Купонҳои ман</h2>
+ <p class="muted">Купонро фаъол кунед ва дар сабад истифода баред.</p>
+ <div id="couponsList"></div>
+ <div class="notice">Купонҳо танҳо дар Demo эътибор доранд.</div>
+</section>
+
+<section id="loyalty" class="page">
+ <h2>💚 Корти RELAX PLUS</h2>
+ <div class="loyalty">
+  <div>Корти рақамии муштарӣ</div>
+  <div class="points" id="points">0</div>
+  <div class="small">Холҳои бонусӣ</div>
+  <div style="margin-top:22px" id="memberName">Муштарии RELAX PLUS</div>
+  <div class="small" id="memberId"></div>
+ </div>
+ <div class="card" style="text-align:center;margin-top:15px">
+  <h3>QR-корти ман</h3>
+  <div class="qr" id="qrcode"></div>
+  <b id="cardNumber"></b>
+  <p class="muted">QR воқеӣ аст, вале ба касса пайваст нест.</p>
+ </div>
+ <div class="card">
+  <b>Чӣ тавр хол мегиред?</b>
+  <p class="muted">Барои ҳар 10 сомонӣ хариди намунавӣ 1 хол.</p>
+ </div>
+ <h3>🎁 Мукофотҳо</h3>
+ <div id="rewards"></div>
+ <h3>🎲 Бозии мукофотӣ</h3>
+ <div class="game">
+  <div class="gift">🎁</div>
+  <h3>Тӯҳфаи рӯз</h3>
+  <p class="muted">Як бор дар як рӯз имкони гирифтани холҳои иловагӣ.</p>
+  <button class="btn" id="gameButton" onclick="playGame()">Кушодани тӯҳфа</button>
+  <p id="gameResult"></p>
+ </div>
+</section>
+
+<section id="cart" class="page">
+ <h2>🛒 Сабади харид</h2>
+ <div id="cartItems"></div>
+ <div id="cartSummary"></div>
+</section>
+
+<section id="shopping" class="page">
+ <h2>📝 Рӯйхати харид</h2>
+ <div class="row">
+  <input class="input" id="listInput" placeholder="Масалан: шир">
+  <button class="btn" onclick="addListItem()">+</button>
+ </div>
+ <div id="shoppingList"></div>
+</section>
+
+<section id="profile" class="page">
+ <h2>👤 Профили ман</h2>
+ <div class="card">
+  <label>Ном</label>
+  <input class="input" id="nameInput" placeholder="Номи шумо">
+  <label>Телефон</label>
+  <input class="input" id="phoneInput" type="tel" placeholder="+992...">
+  <button class="btn" onclick="saveProfile()">Нигоҳ доштан</button>
+ </div>
+ <div class="card">
+  <div class="total"><span>💚 Холҳо</span><b id="profilePoints">0</b></div>
+  <div class="total"><span>🛍️ Фармоишҳо</span><b id="orderCount">0</b></div>
+  <div class="total"><span>❤️ Дӯстдоштаҳо</span><b id="favCount">0</b></div>
+  <div class="total"><span>🎁 Мукофотҳои гирифташуда</span><b id="rewardCount">0</b></div>
+ </div>
+ <button class="btn secondary" onclick="showFavorites()">❤️ Дӯстдоштаҳо</button>
+ <button class="btn secondary" onclick="showPage('shopping')">📝 Рӯйхати харид</button>
+ <h3>🧾 Расидҳои электронӣ</h3>
+ <div id="orders"></div>
+ <p class="notice">Ин барномаи расмии Relax нест. Фармоиш ва пардохтҳо танҳо намунавӣ мебошанд.</p>
+</section>
+</main>
+
+<footer>RELAX PLUS V2 • Independent Demo</footer>
+
+<nav class="nav">
+ <button class="active" data-page="home" onclick="showPage('home')"><span class="ico">🏠</span>Асосӣ</button>
+ <button data-page="offers" onclick="showPage('offers')"><span class="ico">🔥</span>Аксияҳо</button>
+ <button data-page="loyalty" onclick="showPage('loyalty')"><span class="ico">💚</span>Бонус</button>
+ <button data-page="cart" onclick="showPage('cart')"><span class="ico">🛒</span>Сабад <span id="cartBadge"></span></button>
+ <button data-page="profile" onclick="showPage('profile')"><span class="ico">👤</span>Профил</button>
+</nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+const PRODUCTS=[
+{id:1,name:"Шири тару тоза",cat:"Ширӣ",price:12,old:15,emoji:"🥛",plus:11},
+{id:2,name:"Нони тару тоза",cat:"Нон",price:4,old:0,emoji:"🍞",plus:4},
+{id:3,name:"Себ 1 кг",cat:"Мева",price:14,old:18,emoji:"🍎",plus:12},
+{id:4,name:"Банан 1 кг",cat:"Мева",price:19,old:23,emoji:"🍌",plus:17},
+{id:5,name:"Тухм 10 дона",cat:"Ширӣ",price:16,old:19,emoji:"🥚",plus:15},
+{id:6,name:"Панир 200 г",cat:"Ширӣ",price:24,old:29,emoji:"🧀",plus:22},
+{id:7,name:"Гӯшти мурғ 1 кг",cat:"Гӯшт",price:42,old:48,emoji:"🍗",plus:39},
+{id:8,name:"Биринҷ 1 кг",cat:"Хӯрокворӣ",price:18,old:21,emoji:"🍚",plus:17},
+{id:9,name:"Равғани растанӣ",cat:"Хӯрокворӣ",price:26,old:30,emoji:"🫗",plus:24},
+{id:10,name:"Помидор 1 кг",cat:"Сабзавот",price:13,old:16,emoji:"🍅",plus:12},
+{id:11,name:"Бодиринг 1 кг",cat:"Сабзавот",price:11,old:14,emoji:"🥒",plus:10},
+{id:12,name:"Шоколад",cat:"Ширинӣ",price:9,old:12,emoji:"🍫",plus:8},
+{id:13,name:"Қаҳва",cat:"Нӯшокӣ",price:35,old:42,emoji:"☕",plus:32},
+{id:14,name:"Афшура",cat:"Нӯшокӣ",price:14,old:18,emoji:"🧃",plus:12},
+{id:15,name:"Йогурт",cat:"Ширӣ",price:8,old:10,emoji:"🥣",plus:7},
+{id:16,name:"Картошка 1 кг",cat:"Сабзавот",price:7,old:9,emoji:"🥔",plus:6}
+];
+
+const COUPONS=[
+{id:"MILK20",title:"20% тахфиф",desc:"Маҳсулоти ширӣ",emoji:"🥛",type:"category",cat:"Ширӣ",percent:20},
+{id:"FRUIT15",title:"15% тахфиф",desc:"Меваҳо",emoji:"🍎",type:"category",cat:"Мева",percent:15},
+{id:"BASKET10",title:"10 сомонӣ тахфиф",desc:"Сабади зиёда аз 150 сомонӣ",emoji:"🛒",type:"basket",amount:10},
+{id:"DRINK10",title:"10% тахфиф",desc:"Нӯшокиҳо",emoji:"🧃",type:"category",cat:"Нӯшокӣ",percent:10}
+];
+
+const REWARDS=[
+{id:"R20",title:"5 сомонӣ тахфиф",cost:20,emoji:"🎟️"},
+{id:"R50",title:"15 сомонӣ тахфиф",cost:50,emoji:"🎁"},
+{id:"R100",title:"35 сомонӣ тахфиф",cost:100,emoji:"🏆"}
+];
+
+const BRANCHES=[
+"Филиали марказӣ (Demo)",
+"Филиали Айнӣ (Demo)",
+"Филиали Навоӣ (Demo)"
+];
+
+const KEY="relax_plus_v2";
+function load(){
+try{return JSON.parse(localStorage.getItem(KEY)||"{}")||{}}
+catch(e){return {}}
+}
+const old=load();
+const state={
+cart:old.cart||{},
+favorites:old.favorites||[],
+coupon:old.coupon||null,
+points:Number(old.points)||0,
+orders:old.orders||[],
+profile:old.profile||{name:"",phone:""},
+shopping:old.shopping||[],
+rewards:old.rewards||[],
+branch:old.branch||BRANCHES[0],
+lastGame:old.lastGame||"",
+memberId:old.memberId||"RX"+Math.floor(10000000+Math.random()*90000000)
+};
+let category="Ҳама",favoritesOnly=false;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function money(n){return Number(n).toFixed(2)+" сомонӣ"}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(t){
+const el=document.getElementById("toast");
+el.textContent=t;el.style.display="block";
+clearTimeout(toast.timer);
+toast.timer=setTimeout(()=>el.style.display="none",2300);
+}
+function showPage(id){
+document.querySelectorAll(".page").forEach(e=>e.classList.toggle("active",e.id===id));
+document.querySelectorAll(".nav button").forEach(e=>e.classList.toggle("active",e.dataset.page===id));
+if(id==="offers")renderOffers();
+if(id==="coupons")renderCoupons();
+if(id==="loyalty")renderLoyalty();
+if(id==="cart")renderCart();
+if(id==="shopping")renderShopping();
+if(id==="profile")renderProfile();
+window.scrollTo(0,0);
+}
+function chooseBranch(){
+const current=BRANCHES.indexOf(state.branch);
+state.branch=BRANCHES[(current+1)%BRANCHES.length];
+document.getElementById("branchName").textContent=state.branch;
+save();toast("Филиал интихоб шуд");
+}
+function renderCategories(){
+const cats=["Ҳама",...new Set(PRODUCTS.map(p=>p.cat))];
+document.getElementById("categories").innerHTML=cats.map(c=>
+`<button class="chip ${category===c?"active":""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>setCategory(b.dataset.cat));
+}
+function setCategory(c){
+category=c;favoritesOnly=false;
+document.getElementById("search").value="";
+renderCategories();renderProducts();
+}
+function productHTML(p){
+const discount=p.old?Math.round((1-p.price/p.old)*100):0;
+const liked=state.favorites.includes(p.id);
+return `<div class="product">
+${discount?`<span class="sale">-${discount}%</span>`:""}
+<button class="heart" onclick="toggleFavorite(${p.id})">${liked?"❤️":"🤍"}</button>
+<div class="photo">${p.emoji}</div>
+<h4>${esc(p.name)}</h4>
+<div class="muted">${esc(p.cat)}</div>
+<div class="old">${p.old?money(p.old):""}</div>
+<div class="price">${money(p.plus)}</div>
+<div class="tag">💚 PLUS нарх</div>
+<div class="muted">Нархи одӣ: ${money(p.price)}</div>
+<button class="add" onclick="addCart(${p.id})">+</button>
+</div>`;
+}
+function renderProducts(){
+const q=document.getElementById("search").value.trim().toLowerCase();
+const items=PRODUCTS.filter(p=>
+(category==="Ҳама"||p.cat===category)&&
+(!favoritesOnly||state.favorites.includes(p.id))&&
+p.name.toLowerCase().includes(q));
+document.getElementById("products").innerHTML=items.length?items.map(productHTML).join(""):"<div class='empty'>Маҳсулот ёфт нашуд</div>";
+}
+function renderOffers(){
+document.getElementById("offerProducts").innerHTML=
+PRODUCTS.filter(p=>p.old>p.plus).map(productHTML).join("");
+}
+function toggleFavorite(id){
+const i=state.favorites.indexOf(id);
+if(i>=0)state.favorites.splice(i,1);else state.favorites.push(id);
+save();renderProducts();renderOffers();
+toast(i>=0?"Хориҷ шуд":"Ба дӯстдоштаҳо илова шуд");
+}
+function showFavorites(){
+category="Ҳама";favoritesOnly=true;
+document.getElementById("search").value="";
+renderCategories();renderProducts();showPage("home");
+}
+function addCart(id){
+state.cart[id]=(Number(state.cart[id])||0)+1;
+save();updateBadge();toast("Ба сабад илова шуд");
+}
+function qty(id,d){
+const n=(Number(state.cart[id])||0)+d;
+if(n<=0)delete state.cart[id];else state.cart[id]=n;
+save();updateBadge();renderCart();
+}
+function updateBadge(){
+const n=Object.values(state.cart).reduce((s,x)=>s+Number(x),0);
+document.getElementById("cartBadge").innerHTML=n?`<span class="badge">${n}</span>`:"";
+}
+function lines(){
+return PRODUCTS.filter(p=>state.cart[p.id]>0).map(p=>({...p,qty:Number(state.cart[p.id])}));
+}
+function calculate(){
+const items=lines();
+const subtotal=items.reduce((s,p)=>s+p.plus*p.qty,0);
+const coupon=COUPONS.find(c=>c.id===state.coupon);
+let discount=0;
+if(coupon){
+if(coupon.type==="category"){
+const eligible=items.filter(p=>p.cat===coupon.cat).reduce((s,p)=>s+p.plus*p.qty,0);
+discount=eligible*coupon.percent/100;
+}else if(subtotal>150)discount=coupon.amount;
+}
+discount=Math.min(subtotal,discount);
+return {items,subtotal,discount,total:Math.max(0,subtotal-discount)};
+}
+function renderCart(){
+const data=calculate();
+const root=document.getElementById("cartItems");
+const summary=document.getElementById("cartSummary");
+if(!data.items.length){
+root.innerHTML="<div class='empty'>🛒<p>Сабади шумо холӣ аст</p></div>";
+summary.innerHTML="<button class='btn' onclick=\"showPage('home')\">Харид кардан</button>";
+return;
+}
+root.innerHTML=data.items.map(p=>`<div class="cartitem">
+<div class="mini">${p.emoji}</div>
+<div class="cartinfo"><b>${esc(p.name)}</b><div class="muted">${money(p.plus)}</div><b>${money(p.plus*p.qty)}</b></div>
+<div class="qty"><button onclick="qty(${p.id},-1)">−</button><b>${p.qty}</b><button onclick="qty(${p.id},1)">+</button></div>
+</div>`).join("");
+summary.innerHTML=`<div class="card" style="margin-top:18px">
+<div class="total"><span>Маҳсулот</span><b>${money(data.subtotal)}</b></div>
+<div class="total"><span>Тахфифи купон</span><b>−${money(data.discount)}</b></div>
+${state.coupon?`<div class="total"><span>Купон: ${state.coupon}</span><button onclick="removeCoupon()">✕</button></div>`:""}
+<hr style="border:0;border-top:1px solid #eee">
+<div class="total" style="font-size:22px;font-weight:bold"><span>Ҳамагӣ</span><span>${money(data.total)}</span></div>
+<button class="btn" style="width:100%" onclick="checkout()">Хариди намунавӣ</button>
+</div><p class="notice">Ин пардохти воқеӣ нест.</p>`;
+}
+function removeCoupon(){state.coupon=null;save();renderCart();}
+function renderCoupons(){
+document.getElementById("couponsList").innerHTML=COUPONS.map(c=>{
+const active=state.coupon===c.id;
+return `<div class="card coupon">
+<div class="emoji">${c.emoji}</div>
+<div class="info"><b>${esc(c.title)}</b><p class="muted">${esc(c.desc)}</p><small>${c.id}</small></div>
+<button class="btn ${active?"secondary":""}" onclick="selectCoupon('${c.id}')">${active?"Фаъол":"Фаъол кардан"}</button>
+</div>`;
+}).join("");
+}
+function selectCoupon(id){
+state.coupon=state.coupon===id?null:id;
+save();renderCoupons();toast(state.coupon?"Купон фаъол шуд":"Купон хориҷ шуд");
+}
+function checkout(){
+const d=calculate();if(!d.items.length)return;
+const earned=Math.floor(d.total/10);
+state.orders.unshift({
+id:"RX-"+Date.now(),
+date:new Date().toLocaleString("tg-TJ"),
+items:d.items.map(p=>({name:p.name,qty:p.qty,price:p.plus})),
+subtotal:d.subtotal,discount:d.discount,total:d.total,earned,
+branch:state.branch
+});
+state.points+=earned;
+state.cart={};state.coupon=null;
+save();updateBadge();toast("Хариди намунавӣ анҷом шуд: +"+earned+" хол");
+showPage("profile");
+}
+function renderLoyalty(){
+document.getElementById("points").textContent=state.points;
+document.getElementById("memberName").textContent=state.profile.name||"Муштарии RELAX PLUS";
+document.getElementById("memberId").textContent=state.memberId;
+document.getElementById("cardNumber").textContent=state.memberId;
+const qr=document.getElementById("qrcode");
+qr.innerHTML="";
+if(typeof QRCode!=="undefined"){
+new QRCode(qr,{text:"RELAX-DEMO:"+state.memberId,width:180,height:180,correctLevel:QRCode.CorrectLevel.M});
+}else{
+qr.textContent="QR дастрас нест. Интернетро санҷед.";
+}
+renderRewards();
+const today=new Date().toLocaleDateString("en-CA");
+document.getElementById("gameButton").disabled=state.lastGame===today;
+document.getElementById("gameResult").textContent=state.lastGame===today?"Имрӯз аллакай бозӣ кардед.":"";
+}
+function renderRewards(){
+document.getElementById("rewards").innerHTML=REWARDS.map(r=>`<div class="card reward">
+<div class="emoji">${r.emoji}</div>
+<div style="flex:1"><b>${esc(r.title)}</b><p class="muted">${r.cost} хол</p></div>
+<button class="btn" ${state.points<r.cost?"disabled":""} onclick="claimReward('${r.id}')">Гирифтан</button>
+</div>`).join("");
+}
+function claimReward(id){
+const r=REWARDS.find(x=>x.id===id);
+if(!r||state.points<r.cost)return;
+state.points-=r.cost;
+state.rewards.push({id:r.id,title:r.title,date:new Date().toLocaleString("tg-TJ")});
+save();renderLoyalty();toast("Мукофоти намунавӣ гирифта шуд!");
+}
+function playGame(){
+const today=new Date().toLocaleDateString("en-CA");
+if(state.lastGame===today)return;
+const prize=[1,2,3,5,10][Math.floor(Math.random()*5)];
+state.points+=prize;state.lastGame=today;
+save();renderLoyalty();
+document.getElementById("gameResult").textContent="🎉 Шумо "+prize+" хол гирифтед!";
+}
+function renderShopping(){
+const root=document.getElementById("shoppingList");
+root.innerHTML=state.shopping.length?state.shopping.map((x,i)=>`
+<div class="listitem ${x.done?"done":""}">
+<input type="checkbox" ${x.done?"checked":""} onchange="toggleList(${i})">
+<span>${esc(x.text)}</span>
+<button onclick="deleteList(${i})">✕</button>
+</div>`).join(""):"<div class='empty'>Рӯйхати шумо холӣ аст.</div>";
+}
+function addListItem(){
+const input=document.getElementById("listInput");
+const text=input.value.trim().slice(0,100);
+if(!text)return;
+state.shopping.push({text,done:false});
+input.value="";save();renderShopping();
+}
+function toggleList(i){state.shopping[i].done=!state.shopping[i].done;save();renderShopping();}
+function deleteList(i){state.shopping.splice(i,1);save();renderShopping();}
+function renderProfile(){
+document.getElementById("nameInput").value=state.profile.name||"";
+document.getElementById("phoneInput").value=state.profile.phone||"";
+document.getElementById("profilePoints").textContent=state.points;
+document.getElementById("orderCount").textContent=state.orders.length;
+document.getElementById("favCount").textContent=state.favorites.length;
+document.getElementById("rewardCount").textContent=state.rewards.length;
+document.getElementById("orders").innerHTML=state.orders.length?
+state.orders.map(o=>`<div class="card">
+<b>🧾 ${esc(o.id)}</b>
+<p class="muted">${esc(o.date)} • ${esc(o.branch)}</p>
+<p>${o.items.map(i=>esc(i.name)+" × "+i.qty).join(", ")}</p>
+<div class="total"><b>${money(o.total)}</b><b style="color:var(--green)">+${o.earned} хол</b></div>
+<small>Расиди намунавӣ</small>
+</div>`).join(""):"<p class='muted'>Ҳоло расид нест.</p>";
+}
+function saveProfile(){
+state.profile={
+name:document.getElementById("nameInput").value.trim().slice(0,70),
+phone:document.getElementById("phoneInput").value.trim().slice(0,30)
+};
+save();toast("Профил нигоҳ дошта шуд");
+}
+document.getElementById("search").addEventListener("input",()=>{
+category="Ҳама";favoritesOnly=false;
+renderCategories();renderProducts();
+if(!document.getElementById("home").classList.contains("active"))showPage("home");
+});
+document.getElementById("listInput").addEventListener("keydown",e=>{
+if(e.key==="Enter")addListItem();
+});
+document.getElementById("branchName").textContent=state.branch;
+renderCategories();
+renderProducts();
+renderOffers();
+renderCoupons();
+renderShopping();
+updateBadge();
+save();
+</script>
+</body>
+</html>
+# RELAX-PLUS
